@@ -1,17 +1,6 @@
 version: "3.8"
 
 services:
-  kafka-ui:
-    image: provectuslabs/kafka-ui
-    container_name: kafka-ui
-    ports:
-      - "8585:8080"
-    restart: always
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
-
   zookeeper:
     image: bitnami/zookeeper:latest
     ports:
@@ -47,6 +36,19 @@ services:
       bash -c
       "sleep 20s &&
       kafka-topics --create --bootstrap-server kafka:29092 replication-factor 3 --partitions 3 --topic cx.test.topic --if-not-exists"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8585:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
 
 volumes:
   zookeeper_data:
